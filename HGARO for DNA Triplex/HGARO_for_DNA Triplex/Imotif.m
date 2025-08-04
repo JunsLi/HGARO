@@ -1,0 +1,102 @@
+%i-motif constranint()
+function  flag = Imotif(candidate)
+[px,py] = size(candidate);
+% j=1;
+% count = 0;
+% p = 0;
+q = 0;
+ n=0;
+
+% % for i = 1:py-4
+% %     if candidate(1,i) == 2 && candidate(1,i+1) ==2 
+% %            for j=i+3:py-1
+% %                if candidate(1,j)==2 && candidate(1,j+1) ==2
+% %                       n = n + 1;  
+% %                 break
+% %                end
+% %            end
+% %            if n==1
+% %                break
+% %            end
+% %     else
+% %         q=q+1;
+% %     end 
+% %        
+% % end
+
+count = 0;
+    i = 1;
+%     len = length(dna_seq);
+    
+    while i <= py - 4
+        if candidate(i) == 2 && candidate(i+1) ==2
+            count = count + 1;
+            % 检查是否是 CCxCC 模式
+            if i + 3 <= py && candidate(i+2) == 3 && candidate(i+3) == 2 && candidate(i+4) == 2
+%                if i+4>py
+%                    break;
+%                end
+                i = i + 3;  % 跳过中间的一个字符
+            else
+                i = i + 2;  % 跳过当前的 CC
+            end
+        else
+            i = i + 1;  % 没匹配上，继续下一个
+        end
+    end
+
+
+
+
+% for m = 1:1
+%     if py<10
+%         break
+%     end
+%     if p<4||q<6
+%         break
+%     end
+%     for i = 1:py-8
+%         
+%     if candidate(1,i) == 2 && candidate(1,i+1) ==2 && candidate(1,i+2) ==3&& candidate(1,i+3) ==3&& candidate(1,i+4) ==3
+%            n = n + 1;
+%     else
+%         continue
+%     end
+%     if i+9>py
+%         break
+%     end
+%     for j=i+5:py-4
+%      if candidate(1,j) == 2 && candidate(1,j+1) ==2 && candidate(1,j+2) ==3&& candidate(1,j+3) ==3&& candidate(1,j+4) ==3
+%            n = n + 1;
+%     else
+%         continue
+%      end
+%      if j==py-4
+%         break
+%      end
+%     end
+%     break
+%     end
+%  end
+
+%  m=p-q;
+% for i = 1:py
+%     if candidate(1,i) == 2 
+%            count = count + 1;
+%     end
+% end
+
+% if  count>5&& m>1
+if count>3
+    flag = 0;
+else
+    flag =1;
+
+end
+  %A=0
+  %G=1
+  %C=2
+  %T=3
+
+end
+   

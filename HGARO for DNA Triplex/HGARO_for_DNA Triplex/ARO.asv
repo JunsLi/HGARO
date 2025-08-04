@@ -1,0 +1,223 @@
+    %%% Artificial Rabbits Optimization (ARO) for 23 functions %%%
+function [BestX,BestF,HisBestF,Ave,Std]=ARO(F_index,MaxIt,nPop,fobj)
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % FunIndex: Index of function.                       %
+    % MaxIt: Maximum number of iterations.               %
+    % PopSize: Size of population.                       %
+    % PopPos: Position of rabbit population.             %
+    % PopFit: Fitness of population.                     %
+    % Dim: Dimensionality of prloblem.                   %
+    % BestX: Best solution found so far.                 %
+    % BestF: Best fitness corresponding to BestX.        %
+    % HisBestF: History best fitness over iterations.    %
+    % Low: Low bound of search space.                    %
+    % Up: Up bound of search space.                      %
+    % R: Running operator.                               %
+    % L:Running length.                                  %
+    % A: Energy factor.                                  %
+    % H: Hiding parameter.                               %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+[Low,Up,Dim]=FunRange(F_index);
+PopPos=zeros(nPop,Dim);
+PopFit=zeros(nPop,1);
+Run_no=30;
+mm=100;
+for mn= 1:mn
+ for irun=1:Run_no
+
+for i=1:nPop
+    PopPos(i,:)=rand(1,Dim).*(Up-Low)+Low;
+    PopFit(i)=BenFunctions(PopPos(i,:),F_index,Dim);
+end
+% %================！！！！！！！！！！！！！！！！！饥饿游戏初始参数
+Destination_fitness=inf;%change this to -inf for maximization problems
+Worstest_fitness=-inf;
+AllFitness = inf*ones(nPop,1);%record the fitness of all positions
+VC1=ones(nPop,1);
+hungry0 = zeros(1,size(PopPos,1));
+tempPosition0=zeros(nPop,Dim);
+
+weight3 = ones(nPop,Dim);%hungry weight of each position 
+weight4=ones(nPop,Dim);%hungry weight of each position 
+
+hungry = zeros(1,size(PopPos,1));
+tempPosition=zeros(nPop,Dim); 
+count=0;
+% 
+% %===============================================！！！！！！！！！
+BestF=inf;
+BestX=[];
+
+for i=1:nPop
+    if PopFit(i)<=BestF
+        BestF=PopFit(i);
+        BestX=PopPos(i,:);
+    end
+end
+
+HisBestF=zeros(MaxIt,1);
+
+for It=1:MaxIt
+     VC2 = 0.03; %The variable of variation control 
+    sumHungry = 0;%record the sum of each hungry
+    
+    Direct1=zeros(nPop,Dim);
+    Direct2=zeros(nPop,Dim);
+    theta=2*(1-It/MaxIt);
+    for i=1:nPop
+        L=(exp(1)-exp(((It-1)/MaxIt)^2))*(sin(2*pi*rand)); %Eq.(3)
+        rd=ceil(rand*(Dim));
+        Direct1(i,randperm(Dim,rd))=1;
+        c=Direct1(i,:); %Eq.(4)
+        R=L.*c; %Eq.(2)
+        
+        A=2*log(1/rand)*theta;%Eq.(15)
+
+        if A>1
+
+            K=[1:i-1 i+1:nPop];
+            RandInd=K(randi([1 nPop-1]));
+            newPopPos=PopPos(RandInd,:)+R.*( PopPos(i,:)-PopPos(RandInd,:))...
+                +round(0.5*(0.05+rand))*randn; %Eq.(1) 迂回觅食策略
+%             原论文中就这两个策略， 可以加1-2个策略提高寻优性能
+        else
+
+            Direct2(i,ceil(rand*Dim))=1;
+            gr=Direct2(i,:); %Eq.(12)
+            H=((MaxIt-It+1)/MaxIt)*randn; %Eq.(8)
+            b=PopPos(i,:)+H*gr.*PopPos(i,:); %Eq.(13)
+            newPopPos=PopPos(i,:)+ R.*(rand*b-PopPos(i,:)); %Eq.(11) 随机隐藏策略
+
+        end
+        
+        
+        
+        
+        newPopPos=SpaceBound(newPopPos,Up,Low);
+        newPopFit=BenFunctions(newPopPos,F_index,Dim);
+        if newPopFit<PopFit(i)
+            PopFit(i)=newPopFit;
+            PopPos(i,:)=newPopPos;
+        end
+
+    end
+
+    for i=1:nPop
+        if PopFit(i)<BestF
+            BestF=PopFit(i);
+            BestX=PopPos(i,:);%% 关注一下， 这个BestX只是一行的数据
+        end
+    end
+   %饥饿开始
+   for i=1:size(PopPos,1)
+        % Check if solutions go outside the search space and bring them back
+        Flag4Up=PopPos(i,:)>Up;
+        Flag4Low=PopPos(i,:)<Low;
+        PopPos(i,:)=(PopPos(i,:).*(~(Flag4Up+Flag4Low)))+Up.*Flag4Up+Low.*Flag4Low;
+        AllFitness(i) = BenFunctions(PopPos(i,:),F_index,Dim);
+%         AllFitness(i) = F_index(PopPos(i,:));
+%         newPopFit=BenFunctions(newPopPos,F_index,Dim);
+        
+    end
+     [AllFitnessSorted,IndexSorted] = sort(AllFitness);
+    bestFitness = AllFitnessSorted(1);
+    worstFitness = AllFitnessSorted(size(PopPos,1));
+    
+    %Update the best fitness value and best position
+    if bestFitness < Destination_fitness
+        bestPositions=PopPos(IndexSorted(1),:);
+        Destination_fitness = bestFitness;
+        count=0;
+    end
+    
+    if worstFitness > Worstest_fitness
+        Worstest_fitness = worstFitness;
+    end
+    
+    for i = 1:size(PopPos,1)
+         %calculate the variation control of all positions
+         VC1(i) = sech(abs(AllFitness(i)-Destination_fitness));    
+         %calculate the hungry of each position
+        if Destination_fitness == AllFitness(i)
+            hungry(1,i) = 0;
+            count = count+1;
+            tempPosition(count,:)=PopPos(i,:);
+        else
+            temprand = rand();
+            c = (AllFitness(i)-Destination_fitness)/(Worstest_fitness-Destination_fitness)*temprand*2*(Up-Low);
+            if c<100
+                b=100*(1+temprand);
+            else
+                b=c;
+            end   
+            hungry(1,i) = hungry(1,i)+ max(b); 
+            sumHungry = sumHungry + hungry(1,i);
+        end
+    end 
+    
+    %calculate the hungry weight of each position
+    for i=1:size(PopPos,1)
+        for j=2:size(PopPos,2)
+                weight3(i,j) = (1-exp(-abs(hungry(1,i)-sumHungry)))*rand()*2;
+                if rand()<VC2
+                    weight4(i,j) = hungry(1,i)*size(PopPos,1)/sumHungry*rand();
+                else
+                    weight4(i,j) = 1;
+                end
+        end
+        
+    end
+    
+    
+    % Update the Position of search agents
+    shrink=2*(1-It/MaxIt); % a decreases linearly fron 2 to 0 
+    for i=1:size(PopPos,1)
+        if rand<VC2
+            PopPos(i,:) = PopPos(i,j)*(1+randn(1));
+        else
+            A = randi([1,count]);
+            for j=1:size(PopPos,2)
+                r = rand();
+                vb = 2*shrink*r-shrink;%[-a,a]
+                % Moving based on the bestPosition
+                % The transformation range is controlled by weight3,bestPositions and X
+                if r>VC1(i)
+                    PopPos(i,j) = weight4(i,j)*tempPosition(A,j)+vb*weight3(i,j)*abs(tempPosition(A,j)-PopPos(i,j));
+                else
+                    PopPos(i,j) = weight4(i,j)*tempPosition(A,j)-vb*weight3(i,j)*abs(tempPosition(A,j)-PopPos(i,j));
+                end
+            end
+        end
+    end
+    
+    Convergence_curve(It)=Destination_fitness;
+    %饥饿over
+    
+    
+
+    HisBestF(It)=BestF;
+% Arry_Fitness(It)=BestF;
+end
+Arry_Fitness(irun)=BestF;
+
+display(['Run num : ', num2str(irun)]);
+% display(['The best solution obtained by HARO is : ', num2str(Best_pos),10]);
+display(['The best optimal value of the objective funciton found by HARO is : ', num2str(BestF),10]);
+display(sprintf('==============================='));
+
+ end
+ 
+ 
+  Ave=mean(Arry_Fitness);
+Std=std(Arry_Fitness);
+
+display(['Run num : ', num2str(mn)]);
+% display(['The best solution obtained by HARO is : ', num2str(Best_pos),10]);
+display(['The best optimal value of the objective funciton found by HARO is : ', num2str(BestF),10]);
+
+end
+ 
+end
+ 
+
