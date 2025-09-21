@@ -31,17 +31,17 @@ count = 0;
     while i <= py - 4
         if candidate(i) == 2 && candidate(i+1) ==2
             count = count + 1;
-            % 检查是否是 CCxCC 模式
+            % 
             if i + 3 <= py && candidate(i+2) == 3 && candidate(i+3) == 2 && candidate(i+4) == 2
 %                if i+4>py
 %                    break;
 %                end
-                i = i + 3;  % 跳过中间的一个字符
+                i = i + 3;  
             else
-                i = i + 2;  % 跳过当前的 CC
+                i = i + 2;  
             end
         else
-            i = i + 1;  % 没匹配上，继续下一个
+            i = i + 1;  
         end
     end
 
@@ -100,3 +100,4 @@ end
 
 end
    
+
