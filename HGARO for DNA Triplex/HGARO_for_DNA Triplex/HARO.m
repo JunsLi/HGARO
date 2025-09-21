@@ -2,7 +2,7 @@
 % function [BestX,BestF,HisBestF,Ave,Std]=HARO(F_index,MaxIt,nPop,fobj)
 function [BestX,BestF,HisBestF,DNASet]=HARO(nPop,MaxIt,Low,Up,Dim)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % FunIndex: Index of function.                       %
+    % FunIndex: Index of function.                      
     % MaxIt: Maximum number of iterations.               %
     % PopSize: Size of population.                       %
     % PopPos: Position of rabbit population.             %
@@ -41,7 +41,7 @@ NewDNA=[];
 %     PopPos(i,:)=rand(1,Dim).*(Up-Low)+Low;
 % %     PopFit(i)=BenFunctions(PopPos(i,:),F_index,Dim);
 % end
-% %================！！！！！！！！！！！！！！！！！饥饿游戏初始参数
+% %================
 Destination_fitness=inf;%change this to -inf for maximization problems
 Worstest_fitness=-inf;
 % AllFitness = inf*ones(nPop,1);%record the fitness of all positions
@@ -82,11 +82,11 @@ for It=1:MaxIt
     Direct2=zeros(nPop,Dim);
     theta=2*(1-It/MaxIt);
     %%===================s==============================
-    %%%%%%%%%%%%%%%%原算法更新前符合要去的序列个数
+    %%%%%%%%%%%%%%%%
 PopPos001=PopPos;
      PopPos001=unique(PopPos001,'row','stable');
     NewDNA001=[];
-    % %%%%%%%%%%%%%%%%%%%%%%%GC含量
+    % %%%%%%%%%%%%%%%%%%%
     px= size(PopPos001,1);
 index = 1;
 temp=[];
@@ -100,7 +100,7 @@ if length(temp)~=0
      PopPos001(temp,:)=[];
 end
 %=====================
-%四C碱基不连续约束
+
 % %==================
 index2=1;
 temp=[];
@@ -114,7 +114,7 @@ end
 if length(temp)~=0
      PopPos001(temp,:)=[];
 end
-   %%%%% %添加末端约束（左边不能是TC,右边不能是CT(末端是T，此末端是C)）
+   %%%%%
 % if size(NewDNA1,1)==0
 %     NewDNA1=[];
 % else
@@ -133,7 +133,7 @@ end
 % end   
 %%%%%%%%%%%======================
 % % end
-%   %=================%Add 扭应力约束===================
+%   %====================================
 % if size(NewDNA001,1)==0
 %     NewDNA001=[];
 % else
@@ -181,7 +181,7 @@ end
             NewDNA001=[PopPos001(i,:);NewDNA001];
         end
      end  
-  %%%%%%%%%%%%%%%  更新前，约束筛选，最终输出        %%%%%%%%%%%%
+  %%%%%%%%%%%%%%%    %%%%%%%%%%%%
     %==========================================================
     newpop=size(PopPos,1);
     for i=1: newpop
@@ -195,21 +195,21 @@ end
             K=[1:i-1 i+1:  newpop];
             UV=size(PopPos,1);
             RandInd=K(randi([1 UV-1]));
-%             newPopPos=PopPos(RandInd,:)+R.*( PopPos(i,:)-PopPos(RandInd,:))+round(0.5*(0.05+rand))*randn; %Eq.(1) 迂回觅食策略
-%             原论文中就这两个策略， 可以加1-2个策略提高寻优性能
+%             newPopPos=PopPos(RandInd,:)+R.*( PopPos(i,:)-PopPos(RandInd,:))+round(0.5*(0.05+rand))*randn; %Eq.(1) 
+%        
               newPopPos(i,:)=PopPos(RandInd,:)+R.*( PopPos(i,:)-PopPos(RandInd,:))...
-                +round(0.5*(0.05+rand))*randn; %Eq.(1)迂回觅食
+                +round(0.5*(0.05+rand))*randn; %Eq.(1)
         else
             Direct2(i,ceil(rand*Dim))=1;
             gr=Direct2(i,:); %Eq.(12)
             H=((MaxIt-It+1)/MaxIt)*randn; %Eq.(8)
             b=PopPos(i,:)+H*gr.*PopPos(i,:); %Eq.(13)
-            newPopPos(i,:)=PopPos(i,:)+ R.*(rand*b-PopPos(i,:)); %Eq.(11) 随机隐藏策略
+            newPopPos(i,:)=PopPos(i,:)+ R.*(rand*b-PopPos(i,:)); %Eq.(11) 
         end  
 %         newPopPos=SpaceBound(PopPos,Up,Low);
 %         newPopFit=BenFunctions(newPopPos,F_index,Dim);
 
- %=========新位置，原来的2，3，一部分变成了小数， 把这些数变成2或3
+ %=========
          a=[2 3 ];
          for j=1:Dim
          if newPopPos(i,j)<2.5
@@ -221,8 +221,8 @@ end
         end
          end
          
-%%%%%%%%%     这些对所以位置进行适应度函数测试， 这样是不对的， 
-%%%%%%%%%%%%%     需要对满足一定约束分析适应度大小      
+%%%%%%%%%    
+%%%%%%%%%%%%%
 % %             for i=1:size(PopPos,1)
 %                 newPopFit(i)=Eint(newPopPos(i,:));
 % %             end 
@@ -231,14 +231,14 @@ end
 %             PopFit(i)=newPopFit(i);
 %             PopPos(i,:)=newPopPos(i,:);
 %         end
-%%%%%错误的计算适应度和位置替换， 导致了部分序列全部替换成适应度最大的序列，
+%%%%
     end
         %%===================s==============================
-    %%%%%%%%%%%%%%%%兔子更新后符合要去的序列个数
+    %%%%%%%%%%%%%%
 PopPos002= newPopPos;
      PopPos002=unique(PopPos002,'row','stable');
     NewDNA002=[];
-    % %%%%%%%%%%%%%%%%%%%%%%%GC含量
+    % %%%%%%%%%%%%%%%%%%%
     px= size(PopPos002,1);
 index = 1;
 temp=[];
@@ -252,7 +252,7 @@ if length(temp)~=0
      PopPos002(temp,:)=[];
 end
 %=====================
-%四C碱基不连续约束
+%
 % %==================
 index2=1;
 temp=[];
@@ -267,7 +267,7 @@ if length(temp)~=0
      PopPos002(temp,:)=[];
 end
 
-   %%%%% %添加末端约束（左边不能是TC,右边不能是CT(末端是T，次末端是C)）
+   %%%%% 
 x8 = size(PopPos002,1);
 index = 1;
 temp=[];
@@ -282,7 +282,7 @@ temp=[];
 %    PopPos002(temp,:)=[];
 % end   
 %%%%%%%%%%%==================================
-%    %%%%%%%%%%  %Add 扭应力约束
+%    %%%%%%%%%%  %Add 扭
 x5 = size(PopPos002,1);
 index = 1;
 temp=[];
@@ -330,7 +330,7 @@ end
             NewDNA002=[PopPos002(i,:);NewDNA002];
         end
      end  
-  %%%%%%%%%%%%%%%  更新前，约束筛选，最终输出        %%%%%%%%%%%%
+  %%%%%%%%%%%%%%%         %%%%%%%%%%%%
     %==========================================================
      NewDNA003=[NewDNA001;NewDNA002];
      NewDNA003=unique(NewDNA003,'row','stable');
@@ -345,11 +345,11 @@ end
     for i=1:size(NewDNA003,1)
         if PopFit003(i)<BestF
             BestF=PopFit003(i);
-            BestX=newPopPos(i,:);%% 关注一下， 这个BestX只是一行的数据
+            BestX=newPopPos(i,:);%% 
         end
     end
 %   %==========================
-%，最佳位置不符合要求 ，只是最好的适应度， 但是最好的不符合，，，，，
+%，
 
 %=====================
 %     a=[2 3 ];
@@ -365,7 +365,7 @@ end
 %          end
 %     end
 %     
-% %    %%%%%%%%%%%%%饥饿开始
+% %    %%%%%%%%%%
    for i=1:size(newPopPos,1)
         % Check if solutions go outside the search space and bring them back
 %         Flag4Up=PopPos(i,:)>Up;
@@ -450,7 +450,7 @@ end
             end
         end
     end
-% %  %%%%   %-===============================饥饿结束
+% %  %%%%  
 %     
       A=[2 3 ];
      for i=1:size(newPopPos,1)
@@ -471,7 +471,7 @@ end
     NewDNA004=[];
     %%%%%%%%%%%%%%%%%%%去重%%%%%%%%%%%%
       PopPos004=unique(PopPos004,'row','stable');
-    % %%%%%%%%%%%%%%%%%%%%%%%GC含量%%%%%%%%%%%
+    % %%%%%%%%%%%%%%%%%%%
     px= size(PopPos004,1);
 index = 1;
 temp=[];
@@ -484,7 +484,7 @@ end
 if length(temp)~=0
      PopPos004(temp,:)=[];
 end
-%%%%%%%%%%%%%%%四C碱基不连续约束
+
 % %==================
 index2=1;
 temp=[];
@@ -498,7 +498,7 @@ end
 if length(temp)~=0
      PopPos004(temp,:)=[];
 end  
-% %%%%% %添加末端约束（左边不能是TC,右边不能是CT(末端是T，次末端是C)）
+% %%%%% 
 % x11 = size(PopPos004,1);
 % index = 1;
 % temp=[];
@@ -513,7 +513,6 @@ end
 %    PopPos004(temp,:)=[];
 % end   
 % %%%%%%%%%%%======================
-    %=================扭应力约束=======================================================
 
 x5 = size(PopPos004,1);
 index = 1;
@@ -543,7 +542,7 @@ end
             NewDNA004=[PopPos004(i,:);NewDNA004];
         end
      end  
-%      %精英挑选
+% 
 %          [B,min_index] = min(PopFit004);
 %            BestF=B;
 %            BestPos= PopPos004(min_index,:);%Pick out the best particles and their fitness functions
@@ -591,8 +590,7 @@ if length(temp)~=0
 end   
  end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %饥饿over
-  %%%%%%%%%%把更新后的位置传到下一代的位置========
+
         PopPos=newPopPos;
   %%%%%%%%=================================
 %        NewDNA=[NewDNA003;NewDNA004];
@@ -648,4 +646,5 @@ end
  
 % end
  
+
 
