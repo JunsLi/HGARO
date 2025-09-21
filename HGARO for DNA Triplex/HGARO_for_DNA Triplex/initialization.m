@@ -1,6 +1,6 @@
 
 % This function initialize the first population of search agents
-%双工初始化（只有GA）
+%
 function PopPos=initialization(nPop,Dim,Up,Low)
        
 Boundary_no= size(Up,2); % numnber of boundaries
@@ -23,14 +23,14 @@ end
 %unique(A,'row','stable')
 % DNASet=unique(DNASet,'row','stable');
 % XSF = unique(DNASet,'rows','stable');
-%感觉不会越界的！！
+%
 % for i=1:size(DNASet,1)
 %         % Check if solutions go outside the search space and bring them back
 %         Flag4ub=DNASet(i,:)>ub;
 %         Flag4lb=DNASet(i,:)<lb;
 %         DNASet(i,:)=(DNASet(i,:).*(~(Flag4ub+Flag4lb)))+ub.*Flag4ub+lb.*Flag4lb;       
 % end
-%%保证相邻数字不一样
+%
 %  for p = 1:size(DNASet,1)
 %      for q = 1:size(DNASet,2)-1
 %          if DNASet(p,q) == DNASet(p,q+1)
@@ -40,7 +40,7 @@ end
 %  end
 %  del_idx(del_idx(:,end)==0) = [];
 %  DNASet(del_idx,:) = [];
-% %%%%%%%%%%%%%%%%%%%%%%%GC含量
+% %%%%%%%%%%%%%%%%%%%%
 % px = size(DNASet,1);
 % index = 1;
 % temp=[];
@@ -54,7 +54,7 @@ end
 %     DNASet(temp,:)=[];
 % end
 % %=====================
-% %四C碱基不连续约束
+% %
 % % %==================
 % index2=1;
 % temp=[];
@@ -93,13 +93,13 @@ end
 %         end
 %     end
 % end
-%逆序处理
+%
 % Set2(:,:)=Set2(:,end:-1:1);
-% % %loop设置：四个T
+% % %loop settings
 % % TSet=zeros(pxxxx,5);
 % % TSet(TSet==0)=3;
 % 
-% %双工与环的合并
+% %
 % % DNASet=[DNASet,TSet];
 % DNASet0=[DNASet,Set2];
 
@@ -181,3 +181,4 @@ end
 %=================================================
 PopPos =DNASet;
 % PopPos= unique(DNASet,'rows','stable');
+
